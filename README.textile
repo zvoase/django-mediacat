@@ -1,6 +1,6 @@
 h2. About django-mediacat
 
-@django-mediacat@ is a small app with only one view, which lets you retrieve
+django-mediacat is a small app with only one view, which lets you retrieve
 several media files from the server with only one HTTP request.
 
 h3. Rationale
@@ -14,9 +14,9 @@ overhead of a full HTTP request.
 
 h3. How django-mediacat Helps
 
-What @django-mediacat@ does is allow you to set up several 'aliases'; short
+What django-mediacat does is allow you to set up several 'aliases'; short
 names for media files on the web server. These can then be queried from one
-URL, and @django-mediacat@ will concatenate all requested files into one,
+URL, and django-mediacat will concatenate all requested files into one,
 eliminating the overhead of multiple HTTP requests. Because JavaScript and CSS
 don't use namespaces, this concatenation is safe (but some wizards might write
 code that proves otherwise, so always make sure).
@@ -52,7 +52,7 @@ Suppose, for example, there was a group called @js@, with a subgroup called
 would, therefore, be @core.mootools.js@. This method of naming gives files
 with clear and concise names.
 
-The @django-mediacat@ admin site is very self-explanatory; just create your
+The django-mediacat admin site is very self-explanatory; just create your
 groups, attach to those groups your aliases, and you're done.
 
 h3. Using django-mediacat
@@ -72,21 +72,23 @@ h2. Extra Info
 
 h3. Compatibility
 
-This app is fully compatible with Django's other middleware (@django-mediacat@
+This app is fully compatible with Django's other middleware (django-mediacat
 has no middleware itself), and a significant effort has been made to cache the
-data on the client-side, using the @ETags@ and @Last-Modified@ HTTP headers. This means that, again, the number of HTTP requests from each client will be
+data on the client-side, using the @ETags@ and @Last-Modified@ HTTP headers.
+This means that, again, the number of HTTP requests from each client will be
 minimized.
 
 When you change a media file on disk, it is recommendable to invalidate the
 app's caches. This can be done merely by calling the @save()@ method with no
 arguments on each model instance; a handy management command has been provided
-to help do this. To invalidate @django-mediacat@'s caches, issue the following
+to help do this. To invalidate django-mediacat's caches, issue the following
 command at the terminal:
 
 	$ python manage.py mediaclean
 
-This will invalidate all of @django-mediacat@'s caches (which may take a
-while). If, however, you'd prefer to refresh just one file (i.e. one you've made changes to), you can do the following:
+This will invalidate all of django-mediacat's caches (which may take a while).
+If, however, you'd prefer to refresh just one file (i.e. one you've made
+changes to), you can do the following:
 
  	$ python manage.py mediaclean alias1.group1.js alias2.group2.css
 
