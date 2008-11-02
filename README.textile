@@ -30,7 +30,6 @@ First, add @'mediacat'@ to your @INSTALLED_APPS@ list in your project's
 'mediacat.views.cat' view, with any URL you wish, like so:
     
     from django.conf.urls.defaults import *
-    
     urlpatterns = patterns('',
         (r'^media/cat/$', 'mediacat.views.cat'),
     )
