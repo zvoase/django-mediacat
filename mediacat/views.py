@@ -11,17 +11,11 @@ from mediacat.models import MediaAlias
 
 
 def cat(request):
-    aliases = []
-    for canon_name in request.GET.keys():
-        try:
-            aliases.append(MediaAlias.objects.get(canonical_name=canon_name))
-        except MediaAlias.DoesNotExist:
-            warnings.warn('Alias not found: %s' % (canon_name,))
+    aliases = get_aliases(request.META['QUERY_STRING'])
     if not aliases:
         raise Http404
-    e_tag = hashlib.new('sha1', ''.join(alias.hashed for alias in
-                    sorted(aliases,
-                        key=(lambda a: a.canonical_name)))).hexdigest()
+    e_tag = hashlib.new('sha1',
+        ''.join(alias.hashed for alias in aliases).hexdigest()
     last_modified = max(alias.last_modified for alias in aliases)
     response = HttpResponse()
     # Write response information, and client-side caching information.
@@ -43,3 +37,10 @@ def cat(request):
     for alias in aliases:
         response.write(alias.read())
     return response
+
+def get_aliases(qstring):
+    if qstring.startswith('?'):
+        qstring = qstring.lstrip('?')
+    items = qstring.split('&')
+    aliases = [item.split('=')[0] for item in items]
+    return MediaAlias.objects.filter(canonical_name__in=aliases)

@@ -1,0 +1,94 @@
+h2. About django-mediacat
+
+@django-mediacat@ is a small app with only one view, which lets you retrieve
+several media files from the server with only one HTTP request.
+
+h3. Rationale
+
+Usually, designers and developers like to spread CSS and JavaScript files out
+into several files on the web server, and then request only the necessary
+files for each web page. Whilst this approach is more modular, and hence
+prevents the downloading of unnecessary files, the fragmentation also incurs a
+significant performance hit on the web server, as each part represents the
+overhead of a full HTTP request.
+
+h3. How django-mediacat Helps
+
+What @django-mediacat@ does is allow you to set up several 'aliases'; short
+names for media files on the web server. These can then be queried from one
+URL, and @django-mediacat@ will concatenate all requested files into one,
+eliminating the overhead of multiple HTTP requests. Because JavaScript and CSS
+don't use namespaces, this concatenation is safe (but some wizards might write
+code that proves otherwise, so always make sure).
+
+h2. Usage
+
+h3. Installation
+
+First, add @'mediacat'@ to your @INSTALLED_APPS@ list in your project's
+@settings.py@. Then, add to your project a URLconf directive to the
+'mediacat.views.cat' view, with any URL you wish, like so:
+    
+    from django.conf.urls.defaults import *
+    
+    urlpatterns = patterns('',
+        (r'^media/cat/$', 'mediacat.views.cat'),
+    )
+
+You also need to set up the Django admin site on your project, in order to add
+aliases. I won't go into it here, just consult
+"the Django docs":http://docs.djangoproject.com for more information.
+
+h3. Aliases and Groups
+
+The basic concept at the core of concatenating files is the *alias*. Each
+alias represents a single file on the filesystem. Multiple aliases can point
+to one file. Each alias may also be a member of a group, which may be the
+child of another group. The *canonical name* of an alias is composed of a
+period-separated list of the name of the alias, the name of its group, and the
+name of that group's parent, and so on.
+
+Suppose, for example, there was a group called @js@, with a subgroup called
+@mootools@, which has an alias called @core@. The canonical name of this alias
+would, therefore, be @core.mootools.js@. This method of naming gives files
+with clear and concise names.
+
+The @django-mediacat@ admin site is very self-explanatory; just create your
+groups, attach to those groups your aliases, and you're done.
+
+h3. Using django-mediacat
+
+In order to concatenate a set of aliases into one file, simply request the URL
+you have pointed to the @mediacat.views.cat@ view, adding GET keys with no
+value to the query string, like this:
+
+    http://example.com/media/cat/?core.mootools.js&fx.mootools.js&jquery.js
+
+As you can see, each GET parameter represents one media alias, and none have
+any values. This will return the concatenation of the three files represented
+by the aliases @core.mootools.js@, @fx.mootools.js@ and @jquery.js@, in the
+order they were provided.
+
+h2. Extra Info
+
+h3. Compatibility
+
+This app is fully compatible with Django's other middleware (@django-mediacat@
+has no middleware itself), and a significant effort has been made to cache the
+data on the client-side, using the @ETags@ and @Last-Modified@ HTTP headers. This means that, again, the number of HTTP requests from each client will be
+minimized.
+
+When you change a media file on disk, it is recommendable to invalidate the
+app's caches. This can be done merely by calling the @save()@ method with no
+arguments on each model instance; a handy management command has been provided
+to help do this. To invalidate @django-mediacat@'s caches, issue the following
+command at the terminal:
+
+	$ python manage.py mediaclean
+
+This will invalidate all of @django-mediacat@'s caches (which may take a
+while). If, however, you'd prefer to refresh just one file (i.e. one you've made changes to), you can do the following:
+
+ 	$ python manage.py mediaclean alias1.group1.js alias2.group2.css
+
+This will invalidate only the aliases given.
