@@ -41,12 +41,15 @@ class MediaAlias(models.Model):
     def open(self, mode='r'):
         return open(self.filename, mode=mode)
     
-    def read(self, from_cache=True):
+    def read(self, from_cache=True, invalidate=False):
+        if invalidate:
+            data = self.read(from_cache=False)
+            cache.set('media_alias_%s' % (self.hashed,), data, 3600)
+            return data
         if from_cache:
             data = cache.get('media_alias_%s' % (self.hashed,))
             if not data:
-                data = self.read(from_cache=False)
-                cache.set('media_alias_%s' % (self.hashed,), data, 3600)
+                data = self.read(invalidate=True)
             return data
         else:
             with self.open() as fp:
