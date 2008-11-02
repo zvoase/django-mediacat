@@ -35,7 +35,9 @@ command at the terminal:
     
     python manage.py mediaclean
 
-This will invalidate all of django-mediacat's caches (which may take a while). If, however, you'd prefer to refresh just one file (i.e. one you've made changes to), you can do the following:
+This will invalidate all of django-mediacat's caches (which may take a while).
+If, however, you'd prefer to refresh just one file (i.e. one you've made changes
+to), you can do the following:
     
     python manage.py mediaclean alias1.group1.js alias2.group2.css
 
