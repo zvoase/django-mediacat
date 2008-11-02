@@ -1,0 +1,42 @@
+django-mediacat is a small app with only one view, which lets you retrieve
+several media files from the server with only one HTTP request.
+
+Usually, designers and developers like to spread CSS and JavaScript files out
+into several files on the web server, and then request only the necessary files
+for each web page. Whilst this approach is more modular, and hence prevents the
+downloading of unnecessary files, the fragmentation also incurs a significant
+performance hit on the web server, as each part represents the overhead of a
+full HTTP request.
+
+What django-mediacat does is allow you to set up several 'aliases'; short names
+for media files on the web server. These can then be queried from one URL, and
+django-mediacat will concatenate all requested files into one, eliminating the
+overhead of multiple HTTP requests.
+
+To use django-mediacat, simply point a URLconf directive to the
+'mediacat.views.cat' view, and set up your aliases using the Django admin site.
+From the client side, URLs look like this:
+    
+    http://example.com/path/to/cat/?reset.css&grids.css&typography.css
+
+As you can see, each GET parameter represents one media alias, and none have any
+values. This will return the concatenation of the three files. Note that order
+is not observed; this is because Python's dictionary type (which the GET params
+are stored in) does not preserve any ordering. This is fully compatible with
+Django's other middleware (django-mediacat has no middleware itself), and a
+significant effort has been made to cache the data on the client-side, using
+ETags and Last-Modified HTTP headers.
+
+When you change a media file on disk, it is recommendable to invalidate the
+app's caches. This can be done merely by calling the 'save()' method with no
+arguments on each model instance; a handy management command has been provided
+to help do this. To invalidate django-mediacat's caches, issue the following
+command at the terminal:
+    
+    python manage.py mediaclean
+
+This will invalidate all of django-mediacat's caches (which may take a while). If, however, you'd prefer to refresh just one file (i.e. one you've made changes to), you can do the following:
+    
+    python manage.py mediaclean alias1.group1.js alias2.group2.css
+
+This will invalidate only the aliases given.
