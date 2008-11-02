@@ -49,7 +49,7 @@ name of that group's parent, and so on.
 
 Suppose, for example, there was a group called @js@, with a subgroup called
 @mootools@, which has an alias called @core@. The canonical name of this alias
-would, therefore, be @core.mootools.js@. This method of naming gives files
+would, therefore, be @core.mootools.js@. This method of naming produces files
 with clear and concise names.
 
 The django-mediacat admin site is very self-explanatory; just create your
@@ -59,14 +59,15 @@ h3. Using django-mediacat
 
 In order to concatenate a set of aliases into one file, simply request the URL
 you have pointed to the @mediacat.views.cat@ view, adding GET keys with no
-value to the query string, like this:
+value (i.e. instead of @key1=value1&key2=value2@, just use @key1&key2@) to the
+query string, like this:
 
     http://example.com/media/cat/?core.mootools.js&fx.mootools.js&jquery.js
 
-As you can see, each GET parameter represents one media alias, and none have
-any values. This will return the concatenation of the three files represented
-by the aliases @core.mootools.js@, @fx.mootools.js@ and @jquery.js@, in the
-order they were provided.
+As you can see, each GET parameter represents one media alias. This will
+return the concatenation of the three files represented by the aliases
+@core.mootools.js@, @fx.mootools.js@ and @jquery.js@, in the order they were
+provided.
 
 h2. Extra Info
 
@@ -93,3 +94,8 @@ changes to), you can do the following:
  	$ python manage.py mediaclean alias1.group1.js alias2.group2.css
 
 This will invalidate only the aliases given.
+
+h2. About the Author
+
+My name is Zachary Voase, and you can get to my personal home page (which has
+links to all my other pages) "here":http://biga.mp.
